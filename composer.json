@@ -95,14 +95,18 @@
         "moussavouephesia:migration": [
             "@php bin/console make:migration --no-interaction",
             "@php bin/console doctrine:migrations:migrate --no-interaction"
-        ]
+        ],
+        "moussavouephesia:fixtures": "@php bin/console doctrine:fixtures:load --no-interaction"
     },
     "scripts-descriptions": {
         "moussavouephesia:db:create": "A lancer au debut, ou pour repartir d'une base vide",
         "moussavouephesia:cache:clear": "A lancer apres une modification de la configuration",
         "moussavouephesia:make:entity": "A lancer a chaque nouvelle entite a creer",
         "moussavouephesia:migration": "A lancer apres chaque modification des entites"
+        ,
+        "moussavouephesia:fixtures": "A lancer pour remplir la base de donnees avec des donnees de test"
     },
+
     "conflict": {
         "symfony/symfony": "*"
     },
