@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CampagneRepository;
+use App\Trait\DateTimeTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -10,6 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\HasLifecycleCallbacks]
 class Campagne
 {
+    use DateTimeTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -18,35 +21,31 @@ class Campagne
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeImmutable $dateDebut = null;
+    #[ORM\Column(length: 50)]
+    private ?string $periodicite = null;
 
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeImmutable $dateFin = null;
+    #[ORM\Column(length: 50)]
+    private ?string $jourRencontre = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $montant = null;
+    private ?string $montantFixe = null;
 
-    #[ORM\Column]
-    private \DateTimeImmutable $createdAt;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $montantCaissePresent = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $montantCaisseAbsent = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $amendeJournaliere = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?TypeCampagne $typeCampagne = null;
 
-    public function __construct()
-    {
-        $this->createdAt = new \DateTimeImmutable();
-    }
-
-    #[ORM\PreUpdate]
-    public function touch(): void
-    {
-        $this->updatedAt = new \DateTimeImmutable();
-    }
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Exercice $exercice = null;
 
     public function getId(): ?int
     {
@@ -65,50 +64,76 @@ class Campagne
         return $this;
     }
 
-    public function getDateDebut(): ?\DateTimeImmutable
+    public function getPeriodicite(): ?string
     {
-        return $this->dateDebut;
+        return $this->periodicite;
     }
 
-    public function setDateDebut(\DateTimeImmutable $dateDebut): static
+    public function setPeriodicite(string $periodicite): static
     {
-        $this->dateDebut = $dateDebut;
+        $this->periodicite = $periodicite;
 
         return $this;
     }
 
-    public function getDateFin(): ?\DateTimeImmutable
+    public function getJourRencontre(): ?string
     {
-        return $this->dateFin;
+        return $this->jourRencontre;
     }
 
-    public function setDateFin(\DateTimeImmutable $dateFin): static
+    public function setJourRencontre(string $jourRencontre): static
     {
-        $this->dateFin = $dateFin;
+        $this->jourRencontre = $jourRencontre;
 
         return $this;
     }
 
-    public function getMontant(): ?string
+    public function getMontantFixe(): ?string
     {
-        return $this->montant;
+        return $this->montantFixe;
     }
 
-    public function setMontant(string $montant): static
+    public function setMontantFixe(string $montantFixe): static
     {
-        $this->montant = $montant;
+        $this->montantFixe = $montantFixe;
 
         return $this;
     }
 
-    public function getCreatedAt(): \DateTimeImmutable
+    public function getMontantCaissePresent(): ?string
     {
-        return $this->createdAt;
+        return $this->montantCaissePresent;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function setMontantCaissePresent(string $montantCaissePresent): static
     {
-        return $this->updatedAt;
+        $this->montantCaissePresent = $montantCaissePresent;
+
+        return $this;
+    }
+
+    public function getMontantCaisseAbsent(): ?string
+    {
+        return $this->montantCaisseAbsent;
+    }
+
+    public function setMontantCaisseAbsent(string $montantCaisseAbsent): static
+    {
+        $this->montantCaisseAbsent = $montantCaisseAbsent;
+
+        return $this;
+    }
+
+    public function getAmendeJournaliere(): ?string
+    {
+        return $this->amendeJournaliere;
+    }
+
+    public function setAmendeJournaliere(string $amendeJournaliere): static
+    {
+        $this->amendeJournaliere = $amendeJournaliere;
+
+        return $this;
     }
 
     public function getTypeCampagne(): ?TypeCampagne
@@ -119,6 +144,18 @@ class Campagne
     public function setTypeCampagne(?TypeCampagne $typeCampagne): static
     {
         $this->typeCampagne = $typeCampagne;
+
+        return $this;
+    }
+
+    public function getExercice(): ?Exercice
+    {
+        return $this->exercice;
+    }
+
+    public function setExercice(?Exercice $exercice): static
+    {
+        $this->exercice = $exercice;
 
         return $this;
     }

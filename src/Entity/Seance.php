@@ -3,52 +3,43 @@
 namespace App\Entity;
 
 use App\Repository\SeanceRepository;
+use App\Trait\DateTimeTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SeanceRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Seance
 {
+    use DateTimeTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'date_seance', type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $date = null;
-
-    #[ORM\Column]
-    private \DateTimeImmutable $createdAt;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $dateSeance = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Campagne $campagne = null;
-
-    public function __construct()
-    {
-        $this->createdAt = new \DateTimeImmutable();
-    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDate(): ?\DateTimeImmutable
+    public function getDateSeance(): ?\DateTimeImmutable
     {
-        return $this->date;
+        return $this->dateSeance;
     }
 
-    public function setDate(\DateTimeImmutable $date): static
+    public function setDateSeance(\DateTimeImmutable $dateSeance): static
     {
-        $this->date = $date;
+        $this->dateSeance = $dateSeance;
 
         return $this;
-    }
-
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
     }
 
     public function getCampagne(): ?Campagne

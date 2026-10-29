@@ -3,11 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\TypeCampagneRepository;
+use App\Trait\DateTimeTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TypeCampagneRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class TypeCampagne
 {
+    use DateTimeTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

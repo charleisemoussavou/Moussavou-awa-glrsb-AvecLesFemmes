@@ -3,12 +3,16 @@
 namespace App\Entity;
 
 use App\Repository\CotisationRepository;
+use App\Trait\DateTimeTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CotisationRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Cotisation
 {
+    use DateTimeTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -17,8 +21,17 @@ class Cotisation
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?string $montant = null;
 
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $montantCaisse = '0';
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $datePaiement = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $modePaiement = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $presence = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -45,6 +58,18 @@ class Cotisation
         return $this;
     }
 
+    public function getMontantCaisse(): ?string
+    {
+        return $this->montantCaisse;
+    }
+
+    public function setMontantCaisse(string $montantCaisse): static
+    {
+        $this->montantCaisse = $montantCaisse;
+
+        return $this;
+    }
+
     public function getDatePaiement(): ?\DateTimeImmutable
     {
         return $this->datePaiement;
@@ -53,6 +78,30 @@ class Cotisation
     public function setDatePaiement(\DateTimeImmutable $datePaiement): static
     {
         $this->datePaiement = $datePaiement;
+
+        return $this;
+    }
+
+    public function getModePaiement(): ?string
+    {
+        return $this->modePaiement;
+    }
+
+    public function setModePaiement(string $modePaiement): static
+    {
+        $this->modePaiement = $modePaiement;
+
+        return $this;
+    }
+
+    public function getPresence(): ?string
+    {
+        return $this->presence;
+    }
+
+    public function setPresence(string $presence): static
+    {
+        $this->presence = $presence;
 
         return $this;
     }
