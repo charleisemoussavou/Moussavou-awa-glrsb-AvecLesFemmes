@@ -1,0 +1,67 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ campagne.nom }}{% endblock %}
+
+{% block contenu %}
+<a class="retour" href="{{ path('app_groupement_show', {id: campagne.groupementId}) }}">&larr; Retour à {{ campagne.groupementNom }}</a>
+<h1>{{ campagne.nom }}</h1>
+
+<div class="carte">
+    <p><strong>Type :</strong> {{ campagne.type }}</p>
+    <p><strong>Exercice :</strong> {{ campagne.exercice }}</p>
+    <p><strong>Périodicité :</strong> {{ campagne.periodicite }} ({{ campagne.jourRencontre }})</p>
+    <p><strong>Montant fixe :</strong> {{ campagne.montantFixe }}</p>
+    <p><strong>Caisse sociale :</strong> {{ campagne.montantCaissePresent }} si présent, {{ campagne.montantCaisseAbsent }} si absent représenté</p>
+    <p><strong>Amende journalière :</strong> {{ campagne.amendeJournaliere }}</p>
+</div>
+
+<h2>Membres de la campagne</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Téléphone</th>
+            <th>Adresse</th>
+            <th>Mode de cotisation</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for membre in campagne.membres %}
+        <tr>
+            <td>{{ membre.nomComplet }}</td>
+            <td>{{ membre.telephone }}</td>
+            <td>{{ membre.adresse }}</td>
+            <td>{{ membre.modeCotisation }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="4">Aucun membre.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h2>Séances</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Total cotisations</th>
+            <th>Total amendes</th>
+            <th>Total caisse sociale</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for seance in campagne.seances %}
+        <tr>
+            <td>{{ seance.date }}</td>
+            <td>{{ seance.totalCotisations }}</td>
+            <td>{{ seance.totalAmendes }}</td>
+            <td>{{ seance.totalCaisse }}</td>
+            <td><a href="{{ path('app_seance_show', {id: seance.id}) }}">Voir</a></td>
+        </tr>
+    {% else %}
+        <tr><td colspan="5">Aucune séance.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

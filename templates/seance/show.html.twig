@@ -1,0 +1,70 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Séance du {{ seance.date }}{% endblock %}
+
+{% block contenu %}
+<a class="retour" href="{{ path('app_campagne_show', {id: seance.campagneId}) }}">&larr; Retour à {{ seance.campagneNom }}</a>
+<h1>Séance du {{ seance.date }}</h1>
+
+<div class="carte">
+    <p><strong>Total cotisations :</strong> {{ seance.totalCotisations }}</p>
+    <p><strong>Total amendes :</strong> {{ seance.totalAmendes }}</p>
+    <p><strong>Total caisse sociale :</strong> {{ seance.totalCaisse }}</p>
+</div>
+
+<h2>Cotisations</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Membre</th>
+            <th>Présence</th>
+            <th>Montant</th>
+            <th>Part caisse</th>
+            <th>Mode de paiement</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for cotisation in seance.cotisations %}
+        <tr>
+            <td>{{ cotisation.membre }}</td>
+            <td>{{ cotisation.presence }}</td>
+            <td>{{ cotisation.montant }}</td>
+            <td>{{ cotisation.montantCaisse }}</td>
+            <td>{{ cotisation.modePaiement }}</td>
+            <td>{{ cotisation.datePaiement }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="6">Aucune cotisation.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h2>Amendes</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Membre</th>
+            <th>Montant</th>
+            <th>Jours</th>
+            <th>Du</th>
+            <th>Au</th>
+            <th>Payée</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for amende in seance.amendes %}
+        <tr>
+            <td>{{ amende.membre }}</td>
+            <td>{{ amende.montant }}</td>
+            <td>{{ amende.nombreJours }}</td>
+            <td>{{ amende.dateDebut }}</td>
+            <td>{{ amende.dateFin }}</td>
+            <td>{{ amende.payee }}</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="6">Aucune amende.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

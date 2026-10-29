@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Campagne;
 use App\Entity\ModeCotisation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +17,18 @@ class ModeCotisationRepository extends ServiceEntityRepository
         parent::__construct($registry, ModeCotisation::class);
     }
 
-//    /**
-//     * @return ModeCotisation[] Returns an array of ModeCotisation objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('m.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?ModeCotisation
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @return ModeCotisation[]
+     */
+    public function findByCampagne(Campagne $campagne): array
+    {
+        return $this->createQueryBuilder('mc')
+            ->join('mc.membre', 'm')
+            ->addSelect('m')
+            ->andWhere('mc.campagne = :campagne')
+            ->setParameter('campagne', $campagne)
+            ->orderBy('m.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
