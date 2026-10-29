@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Campagne;
 use App\Entity\Cotisation;
+use App\Entity\Seance;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +18,35 @@ class CotisationRepository extends ServiceEntityRepository
         parent::__construct($registry, Cotisation::class);
     }
 
-//    /**
-//     * @return Cotisation[] Returns an array of Cotisation objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @return Cotisation[]
+     */
+    public function findBySeance(Seance $seance): array
+    {
+        return $this->createQueryBuilder('c')
+            ->join('c.membre', 'm')
+            ->addSelect('m')
+            ->andWhere('c.seance = :seance')
+            ->setParameter('seance', $seance)
+            ->orderBy('m.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
-//    public function findOneBySomeField($value): ?Cotisation
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @return array<int, string> total des cotisations, indexé par identifiant de séance
+     */
+    public function totauxParSeance(Campagne $campagne): array
+    {
+        $lignes = $this->createQueryBuilder('c')
+            ->select('IDENTITY(c.seance) AS seanceId', 'SUM(c.montant) AS total')
+            ->join('c.seance', 's')
+            ->andWhere('s.campagne = :campagne')
+            ->setParameter('campagne', $campagne)
+            ->groupBy('c.seance')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_column($lignes, 'total', 'seanceId');
+    }
 }
