@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Campagne;
 use App\Entity\MouvementCaisseSociale;
+use App\Entity\Seance;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +18,32 @@ class MouvementCaisseSocialeRepository extends ServiceEntityRepository
         parent::__construct($registry, MouvementCaisseSociale::class);
     }
 
-//    /**
-//     * @return MouvementCaisseSociale[] Returns an array of MouvementCaisseSociale objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('m.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @return array<int, string> total de la caisse sociale, indexé par identifiant de séance
+     */
+    public function totauxParSeance(Campagne $campagne): array
+    {
+        $lignes = $this->createQueryBuilder('mv')
+            ->select('IDENTITY(mv.seance) AS seanceId', 'SUM(mv.montant) AS total')
+            ->join('mv.seance', 's')
+            ->andWhere('s.campagne = :campagne')
+            ->setParameter('campagne', $campagne)
+            ->groupBy('mv.seance')
+            ->getQuery()
+            ->getArrayResult();
 
-//    public function findOneBySomeField($value): ?MouvementCaisseSociale
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        return array_column($lignes, 'total', 'seanceId');
+    }
+
+    public function totalPourSeance(Seance $seance): string
+    {
+        $total = $this->createQueryBuilder('mv')
+            ->select('SUM(mv.montant)')
+            ->andWhere('mv.seance = :seance')
+            ->setParameter('seance', $seance)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $total ?? '0';
+    }
 }
