@@ -1,0 +1,49 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}{{ detail.groupement.nom }}{% endblock %}
+
+{% block contenu %}
+<a class="retour" href="{{ path('app_groupement_index') }}">&larr; Retour aux groupements</a>
+<h1>{{ detail.groupement.nom }}</h1>
+
+<div class="carte">
+    <p><strong>Téléphone :</strong> {{ detail.groupement.telephone }}</p>
+    <p><strong>Adresse :</strong> {{ detail.groupement.adresse }}</p>
+    {% if detail.groupement.exerciceEnCours %}
+        {% set exercice = detail.groupement.exerciceEnCours %}
+        <p><strong>Exercice en cours :</strong> du {{ exercice.dateDebut }} au {{ exercice.dateFin }}</p>
+        <p><strong>Date limite des prêts :</strong> {{ exercice.dateLimitePret }}</p>
+        <p><strong>Date de rétribution :</strong> {{ exercice.dateRetribution }}</p>
+    {% else %}
+        <p><strong>Exercice en cours :</strong> aucun</p>
+    {% endif %}
+</div>
+
+<h2>Campagnes</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Type</th>
+            <th>Périodicité</th>
+            <th>Jour de rencontre</th>
+            <th>Montant fixe</th>
+            <th>Exercice</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for campagne in detail.campagnes %}
+        <tr>
+            <td>{{ campagne.nom }}</td>
+            <td>{{ campagne.type }}</td>
+            <td>{{ campagne.periodicite }}</td>
+            <td>{{ campagne.jourRencontre }}</td>
+            <td>{{ campagne.montantFixe }}</td>
+            <td>{{ campagne.exercice }} ({{ campagne.statutExercice }})</td>
+        </tr>
+    {% else %}
+        <tr><td colspan="6">Aucune campagne.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
