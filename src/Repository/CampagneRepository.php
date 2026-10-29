@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Campagne;
+use App\Entity\Groupement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,21 @@ class CampagneRepository extends ServiceEntityRepository
         parent::__construct($registry, Campagne::class);
     }
 
-//    /**
-//     * @return Campagne[] Returns an array of Campagne objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Campagne
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @return Campagne[]
+     */
+    public function findByGroupement(Groupement $groupement): array
+    {
+        return $this->createQueryBuilder('c')
+            ->join('c.exercice', 'e')
+            ->addSelect('e')
+            ->join('c.typeCampagne', 't')
+            ->addSelect('t')
+            ->andWhere('e.groupement = :groupement')
+            ->setParameter('groupement', $groupement)
+            ->orderBy('e.dateDebut', 'DESC')
+            ->addOrderBy('c.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
