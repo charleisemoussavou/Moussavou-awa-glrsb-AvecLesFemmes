@@ -34,7 +34,7 @@
     <tbody>
     {% for campagne in detail.campagnes %}
         <tr>
-            <td>{{ campagne.nom }}</td>
+            <td><a href="{{ path('app_campagne_show', {id: campagne.id}) }}">{{ campagne.nom }}</a></td>
             <td>{{ campagne.type }}</td>
             <td>{{ campagne.periodicite }}</td>
             <td>{{ campagne.jourRencontre }}</td>
