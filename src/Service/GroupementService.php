@@ -4,8 +4,10 @@ namespace App\Service;
 
 use App\Dto\CampagneDto;
 use App\Dto\ExerciceDto;
+use App\Dto\FiltreGroupementDto;
 use App\Dto\GroupementDetailDto;
 use App\Dto\GroupementDto;
+use App\Dto\PageGroupementDto;
 use App\Entity\Campagne;
 use App\Entity\Exercice;
 use App\Entity\Groupement;
@@ -14,6 +16,8 @@ use App\Repository\GroupementRepository;
 
 class GroupementService
 {
+    private const PAR_PAGE = 2;
+
     public function __construct(
         private readonly GroupementRepository $groupementRepository,
         private readonly CampagneRepository $campagneRepository,
@@ -21,14 +25,21 @@ class GroupementService
     ) {
     }
 
-    /**
-     * @return GroupementDto[]
-     */
-    public function lister(): array
+    public function lister(FiltreGroupementDto $filtre, int $page): PageGroupementDto
     {
-        return array_map(
-            fn (Groupement $g) => $this->versGroupementDto($g),
-            $this->groupementRepository->findGroupementsAndExerciceEnCours(),
+        $recherche = trim((string) $filtre->recherche);
+        $recherche = $recherche === '' ? null : $recherche;
+        $page = max(1, $page);
+
+        $resultats = $this->groupementRepository->findPageAndExerciceEnCours($recherche, $page, self::PAR_PAGE);
+        $total = count($resultats);
+
+        return new PageGroupementDto(
+            array_map(fn (Groupement $g) => $this->versGroupementDto($g), iterator_to_array($resultats)),
+            $page,
+            max(1, (int) ceil($total / self::PAR_PAGE)),
+            $total,
+            $recherche ?? '',
         );
     }
 

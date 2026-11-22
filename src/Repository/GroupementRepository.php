@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Groupement;
 use App\Enum\StatutExercice;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -18,19 +19,26 @@ class GroupementRepository extends ServiceEntityRepository
     }
 
     /**
-     * Une seule requête : chaque groupement arrive avec son exercice en cours déjà chargé.
+     * Une page de groupements, filtrés par téléphone ou ville, chacun avec son exercice en cours.
      *
-     * @return Groupement[]
+     * @return Paginator<Groupement>
      */
-    public function findGroupementsAndExerciceEnCours(): array
+    public function findPageAndExerciceEnCours(?string $recherche, int $page, int $parPage): Paginator
     {
-        return $this->createQueryBuilder('g')
+        $qb = $this->createQueryBuilder('g')
             ->leftJoin('g.exercices', 'e', 'WITH', 'e.statut = :statut')
             ->addSelect('e')
             ->setParameter('statut', StatutExercice::EN_COURS)
             ->orderBy('g.nom', 'ASC')
-            ->getQuery()
-            ->getResult();
+            ->setFirstResult(($page - 1) * $parPage)
+            ->setMaxResults($parPage);
+
+        if ($recherche !== null) {
+            $qb->andWhere('g.telephone LIKE :recherche OR LOWER(g.adresse) LIKE :recherche')
+                ->setParameter('recherche', '%' . mb_strtolower($recherche) . '%');
+        }
+
+        return new Paginator($qb->getQuery(), true);
     }
 
     public function findOneAndExerciceEnCours(int $id): ?Groupement
