@@ -7,6 +7,7 @@ use App\Dto\ExerciceDto;
 use App\Dto\FiltreGroupementDto;
 use App\Dto\GroupementDetailDto;
 use App\Dto\GroupementDto;
+use App\Dto\GroupementFormDto;
 use App\Dto\PageGroupementDto;
 use App\Entity\Campagne;
 use App\Entity\Exercice;
@@ -41,6 +42,18 @@ class GroupementService
             $total,
             $recherche ?? '',
         );
+    }
+
+    public function creer(GroupementFormDto $dto): Groupement
+    {
+        $groupement = (new Groupement())
+            ->setNom($dto->nom)
+            ->setTelephone($dto->telephone)
+            ->setAdresse($dto->adresse ?: null);
+
+        $this->groupementRepository->save($groupement);
+
+        return $groupement;
     }
 
     public function detail(int $id): ?GroupementDetailDto
