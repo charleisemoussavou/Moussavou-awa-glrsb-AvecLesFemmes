@@ -1,0 +1,17 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Nouveau groupement{% endblock %}
+
+{% block contenu %}
+<a class="retour" href="{{ path('app_groupement_index') }}">&larr; Retour aux groupements</a>
+<h1>Nouveau groupement</h1>
+
+<div class="carte">
+    {{ form_start(form) }}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.telephone) }}
+        {{ form_row(form.adresse) }}
+        <button type="submit">Enregistrer</button>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
