@@ -9,7 +9,6 @@ use App\Dto\GroupementDto;
 use App\Entity\Campagne;
 use App\Entity\Exercice;
 use App\Entity\Groupement;
-use App\Enum\StatutExercice;
 use App\Repository\CampagneRepository;
 use App\Repository\GroupementRepository;
 
@@ -27,13 +26,20 @@ class GroupementService
      */
     public function lister(): array
     {
-        $groupements = $this->groupementRepository->findBy([], ['nom' => 'ASC']);
-
-        return array_map(fn (Groupement $g) => $this->versGroupementDto($g), $groupements);
+        return array_map(
+            fn (Groupement $g) => $this->versGroupementDto($g),
+            $this->groupementRepository->findGroupementsAndExerciceEnCours(),
+        );
     }
 
-    public function detail(Groupement $groupement): GroupementDetailDto
+    public function detail(int $id): ?GroupementDetailDto
     {
+        $groupement = $this->groupementRepository->findOneAndExerciceEnCours($id);
+
+        if ($groupement === null) {
+            return null;
+        }
+
         $campagnes = $this->campagneRepository->findByGroupement($groupement);
 
         return new GroupementDetailDto(
@@ -44,7 +50,7 @@ class GroupementService
 
     private function versGroupementDto(Groupement $groupement): GroupementDto
     {
-        $exercice = $this->trouverExerciceEnCours($groupement);
+        $exercice = $groupement->getExercices()->first() ?: null;
 
         return new GroupementDto(
             $groupement->getId(),
@@ -81,16 +87,5 @@ class GroupementService
             $this->formatteur->date($exercice->getDateDebut()) . ' au ' . $this->formatteur->date($exercice->getDateFin()),
             $exercice->getStatut()->label(),
         );
-    }
-
-    private function trouverExerciceEnCours(Groupement $groupement): ?Exercice
-    {
-        foreach ($groupement->getExercices() as $exercice) {
-            if ($exercice->getStatut() === StatutExercice::EN_COURS) {
-                return $exercice;
-            }
-        }
-
-        return null;
     }
 }
