@@ -12,12 +12,17 @@
     th { background: #ece4f5; }
     .carte { background: #fff; border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; }
     .retour { display: inline-block; margin-bottom: 16px; color: #5b2a86; }
+    .succes { background: #e3f5e8; color: #1c6b34; padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; }
+    .actions { margin-bottom: 16px; }
 </style>
 {% endblock %}
 
 {% block body %}
 <nav><a href="{{ path('app_groupement_index') }}">AvecLesFemmes</a></nav>
 <main>
+    {% for message in app.flashes('succes') %}
+        <div class="succes">{{ message }}</div>
+    {% endfor %}
     {% block contenu %}{% endblock %}
 </main>
 {% endblock %}

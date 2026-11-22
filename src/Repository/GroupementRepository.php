@@ -18,6 +18,12 @@ class GroupementRepository extends ServiceEntityRepository
         parent::__construct($registry, Groupement::class);
     }
 
+    public function save(Groupement $groupement): void
+    {
+        $this->getEntityManager()->persist($groupement);
+        $this->getEntityManager()->flush();
+    }
+
     /**
      * Une page de groupements, filtrés par téléphone ou ville, chacun avec son exercice en cours.
      *
