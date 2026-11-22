@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Dto\FiltreGroupementDto;
+use App\Form\FiltreGroupementType;
 use App\Service\GroupementService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -15,10 +18,15 @@ final class GroupementController extends AbstractController
     }
 
     #[Route('', name: 'app_groupement_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $filtre = new FiltreGroupementDto();
+        $form = $this->createForm(FiltreGroupementType::class, $filtre);
+        $form->handleRequest($request);
+
         return $this->render('groupement/index.html.twig', [
-            'groupements' => $this->groupementService->lister(),
+            'resultat' => $this->groupementService->lister($filtre, $request->query->getInt('page', 1)),
+            'form' => $form->createView(),
         ]);
     }
 
