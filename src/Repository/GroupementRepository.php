@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Groupement;
+use App\Enum\StatutExercice;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,31 @@ class GroupementRepository extends ServiceEntityRepository
         parent::__construct($registry, Groupement::class);
     }
 
-//    /**
-//     * @return Groupement[] Returns an array of Groupement objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('g.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * Une seule requête : chaque groupement arrive avec son exercice en cours déjà chargé.
+     *
+     * @return Groupement[]
+     */
+    public function findGroupementsAndExerciceEnCours(): array
+    {
+        return $this->createQueryBuilder('g')
+            ->leftJoin('g.exercices', 'e', 'WITH', 'e.statut = :statut')
+            ->addSelect('e')
+            ->setParameter('statut', StatutExercice::EN_COURS)
+            ->orderBy('g.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
-//    public function findOneBySomeField($value): ?Groupement
-//    {
-//        return $this->createQueryBuilder('g')
-//            ->andWhere('g.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function findOneAndExerciceEnCours(int $id): ?Groupement
+    {
+        return $this->createQueryBuilder('g')
+            ->leftJoin('g.exercices', 'e', 'WITH', 'e.statut = :statut')
+            ->addSelect('e')
+            ->andWhere('g.id = :id')
+            ->setParameter('statut', StatutExercice::EN_COURS)
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
