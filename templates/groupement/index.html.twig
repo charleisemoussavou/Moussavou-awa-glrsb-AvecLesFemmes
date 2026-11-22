@@ -5,6 +5,16 @@
 {% block contenu %}
 <h1>Groupements</h1>
 
+<div class="carte">
+    {{ form_start(form) }}
+        {{ form_row(form.recherche) }}
+        <button type="submit">Rechercher</button>
+        <a href="{{ path('app_groupement_index') }}">Réinitialiser</a>
+    {{ form_end(form, {render_rest: false}) }}
+</div>
+
+<p>{{ resultat.total }} groupement(s) trouvé(s)</p>
+
 <table>
     <thead>
         <tr>
@@ -17,7 +27,7 @@
         </tr>
     </thead>
     <tbody>
-    {% for groupement in groupements %}
+    {% for groupement in resultat.groupements %}
         <tr>
             <td>{{ groupement.nom }}</td>
             <td>{{ groupement.telephone }}</td>
@@ -32,8 +42,21 @@
             <td><a href="{{ path('app_groupement_show', {id: groupement.id}) }}">Voir</a></td>
         </tr>
     {% else %}
-        <tr><td colspan="6">Aucun groupement.</td></tr>
+        <tr><td colspan="6">Aucun groupement ne correspond à la recherche.</td></tr>
     {% endfor %}
     </tbody>
 </table>
+
+{% if resultat.totalPages > 1 %}
+<p>
+    Pages :
+    {% for n in 1..resultat.totalPages %}
+        {% if n == resultat.page %}
+            <strong>{{ n }}</strong>
+        {% else %}
+            <a href="{{ path('app_groupement_index', {recherche: resultat.recherche, page: n}) }}">{{ n }}</a>
+        {% endif %}
+    {% endfor %}
+</p>
+{% endif %}
 {% endblock %}
