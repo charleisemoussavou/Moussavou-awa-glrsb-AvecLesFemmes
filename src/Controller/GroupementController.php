@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Groupement;
 use App\Service\GroupementService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,10 +23,16 @@ final class GroupementController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_groupement_show', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function show(Groupement $groupement): Response
+    public function show(int $id): Response
     {
+        $detail = $this->groupementService->detail($id);
+
+        if ($detail === null) {
+            throw $this->createNotFoundException('Groupement introuvable.');
+        }
+
         return $this->render('groupement/show.html.twig', [
-            'detail' => $this->groupementService->detail($groupement),
+            'detail' => $detail,
         ]);
     }
 }
